@@ -1,0 +1,33 @@
+GRZYBOL FIELD TERMINAL — PIERWSZA WERSJA STRONY
+================================================
+
+1. Rozpakuj plik ZIP do folderu, np. Dokumenty/grzybol-site-v1.
+2. Otwórz folder.
+3. Kliknij dwa razy plik index.html.
+4. Strona otworzy się w Twojej przeglądarce. Gotowe!
+
+Przyciski i menu prowadzą do działających podstron:
+- index.html    — strona główna
+- projekt.html  — opis urządzenia
+- devlog.html   — dziennik prac
+- roadmapa.html — plan kolejnych etapów
+
+GDY CHCESZ COŚ ZMIENIĆ
+---------------------
+Otwórz ten folder w Visual Studio Code (VS Code).
+- Teksty i treść: odpowiedni plik .html
+- Kolory, czcionki i wygląd: style.css
+- Menu na telefonie: script.js
+- Logo i grafika urządzenia: folder assets
+
+Pierwsza drobna zmiana:
+Otwórz index.html w VS Code, znajdź zdanie "Przenośne urządzenie GPS...",
+zmień kilka słów, zapisz (Ctrl+S) i odśwież stronę w przeglądarce (F5).
+
+Na razie nie trzeba instalować Node.js, Astro ani konfigurować serwera.
+To pierwszy statyczny prototyp. Gdy będzie dopracowany, można go
+przenieść do Astro i zautomatyzować wpisy w devlogu.
+
+WAŻNE:
+Grafika urządzenia jest wizualizacją koncepcyjną, nie zdjęciem
+fizycznego prototypu. Na stronie opisano planowane komponenty.
