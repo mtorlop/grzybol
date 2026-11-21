@@ -1,0 +1,117 @@
+
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  getCollection,
+  render,
+  type CollectionEntry
+} from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+
+// Pobieramy wpisy Markdown
+const entries: CollectionEntry<'devlog'>[] =
+  await getCollection('devlog');
+
+// Ustalamy datę do sortowania
+const sortValue = (entry: CollectionEntry<'devlog'>) => {
+  if (entry.data.date) {
+    return entry.data.date.getTime();
+  }
+
+  if (entry.data.month) {
+    return Date.parse(`${entry.data.month}-01T00:00:00Z`);
+  }
+
+  return 0;
+};
+
+// Najnowsze wpisy wyświetlamy na górze
+entries.sort((a, b) => {
+  const dateDiff = sortValue(b) - sortValue(a);
+
+  if (dateDiff !== 0) {
+    return dateDiff;
+  }
+
+  return b.data.order - a.data.order;
+});
+
+// Przygotowujemy treść wpisów
+const posts = await Promise.all(
+  entries.map(async (entry) => ({
+    data: entry.data,
+    Content: (await render(entry)).Content
+  }))
+);
+---
+
+<BaseLayout
+  title="Devlog"
+  description="Dziennik rozwoju GRZYBOLA: postępy projektowania elektroniki, PCB i oprogramowania."
+  activePage="devlog"
+>
+  <main class="subpage">
+
+    <p class="eyebrow">02 / DEVELOPMENT LOG</p>
+
+    <h1 class="subheading">DEVLOG</h1>
+
+    <p class="intro">
+      Zapis postępów, decyzji i eksperymentów
+      podczas tworzenia GRZYBOLA.
+    </p>
+
+    <!-- AUTOMATYCZNA LISTA WPISÓW -->
+    <div class="log-list">
+
+      {posts.map(({ data, Content }) => (
+        <article class="log-item">
+
+          <div class="log-date">
+
+            {data.month
+              ? new Date(`${data.month}-01T00:00:00Z`)
+                  .toLocaleDateString('pl-PL', {
+                    month: 'long',
+                    year: 'numeric',
+                    timeZone: 'UTC'
+                  })
+                  .toUpperCase()
+              : data.date?.toLocaleDateString('pl-PL', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  timeZone: 'UTC'
+                })
+            }
+
+            <br />
+
+            <span>{data.category}</span>
+
+          </div>
+
+          <div>
+            <h2>{data.title}</h2>
+            <Content />
+          </div>
+
+        </article>
+      ))}
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 GRZYBOL</span>
+
+    <span>
+      <a href={`${base}roadmapa/`}>
+        CO DALEJ? →
+      </a>
+    </span>
+  </footer>
+
+</BaseLayout>

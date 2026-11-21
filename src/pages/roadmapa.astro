@@ -1,0 +1,150 @@
+
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Roadmapa"
+  description="Plan rozwoju projektu GRZYBOL9000: hardware, firmware, prototyp i testy terenowe."
+  activePage="roadmapa"
+>
+  <main class="subpage">
+
+    <p class="eyebrow">03 / MISSION PLAN</p>
+
+    <h1 class="subheading">ROADMAPA</h1>
+
+    <p class="intro">
+      Kolejne etapy prowadzące od pomysłu do urządzenia,
+      które można zabrać do lasu. Kolejność może się
+      zmieniać wraz z wynikami testów.
+    </p>
+
+    <div class="log-list">
+
+      <!-- ETAP 1: KONCEPCJA -->
+      <div class="phase">
+        <div class="phase-row">
+          <div class="phase-mark">✓</div>
+
+          <div>
+            <h2>Koncepcja i dobór głównych bloków</h2>
+            <p>
+              Założenia urządzenia, moduł GNSS,
+              rodzaj zasilania i podstawowa architektura.
+            </p>
+            <span class="tag" style="color:#a6bd8b">
+              ZAŁOŻENIA USTALONE
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAP 2: PCB REV A -->
+      <div class="phase current">
+        <div class="phase-row">
+          <div class="phase-mark">●</div>
+
+          <div>
+            <h2>Projekt PCB Rev A</h2>
+            <p>
+              Schemat, footprinty, rozmieszczenie
+              komponentów, prowadzenie ścieżek
+              i kontrola projektu.
+            </p>
+            <span class="tag">W TOKU</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAP 3: URUCHOMIENIE ELEKTRONIKI -->
+      <div class="phase">
+        <div class="phase-row">
+          <div class="phase-mark">○</div>
+
+          <div>
+            <h2>Montaż i uruchomienie elektroniki</h2>
+            <p>
+              Zamówienie płytek, pomiary zasilania,
+              programowanie przez SWD i weryfikacja
+              połączeń.
+            </p>
+            <span class="tag" style="color:#879487">
+              PLANOWANE
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAP 4: FIRMWARE -->
+      <div class="phase">
+        <div class="phase-row">
+          <div class="phase-mark">○</div>
+
+          <div>
+            <h2>Firmware: wersja podstawowa</h2>
+            <p>
+              Odczyt danych GPS, prezentacja pozycji
+              i obsługa podstawowych funkcji urządzenia.
+            </p>
+            <span class="tag" style="color:#879487">
+              PLANOWANE
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAP 5: TESTY TERENOWE -->
+      <div class="phase">
+        <div class="phase-row">
+          <div class="phase-mark">○</div>
+
+          <div>
+            <h2>Obudowa i testy terenowe</h2>
+            <p>
+              Sprawdzenie ergonomii, poboru prądu
+              i stabilności pracy poza warsztatem.
+            </p>
+            <span class="tag" style="color:#879487">
+              PLANOWANE
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAP 6: APLIKACJA -->
+      <div class="phase">
+        <div class="phase-row">
+          <div class="phase-mark">○</div>
+
+          <div>
+            <h2>Checkpointy i aplikacja mapowa</h2>
+            <p>
+              Docelowo zapisywanie punktów
+              orientacyjnych i rozwój osobnej
+              aplikacji leśnej.
+            </p>
+            <span class="tag" style="color:#879487">
+              PRZYSZŁOŚĆ
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 GRZYBOL</span>
+
+    <span>
+      <a href={base}>
+        POWRÓT NA START →
+      </a>
+    </span>
+  </footer>
+
+</BaseLayout>
