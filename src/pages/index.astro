@@ -1,0 +1,139 @@
+
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Strona główna"
+  description="GRZYBOL: autorski projekt przenośnego urządzenia GPS do leśnych wypraw."
+  activePage="start"
+>
+  <main>
+
+    <!-- SEKCJA GŁÓWNA -->
+    <section class="hero" aria-labelledby="hero-title">
+
+      <div class="hero-copy">
+
+        <p class="eyebrow">
+          GRZYBOL &nbsp;//&nbsp; 
+        </p>
+
+        <h1 id="hero-title" class="hero-title">
+          GRZYBOL9000
+          <span>LOKALIZATOR LEŚNY</span>
+        </h1>
+
+        <div class="accent-bar"></div>
+
+        <p class="hero-desc">
+          Przenośne urządzenie GPS stworzone z myślą
+          o nawigacji w lesie, zapisywaniu punktów
+          orientacyjnych i wspieraniu wypraw
+          grzybiarskich.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`${base}projekt/`}>
+            O PROJEKCIE
+            <span class="arr" aria-hidden="true">→</span>
+          </a>
+
+          <a class="btn" href={`${base}devlog/`}>
+            DEVLOG
+          </a>
+        </div>
+
+      </div>
+
+      <!-- WIZUALIZACJA URZĄDZENIA -->
+      <div class="hero-visual">
+
+        <img
+          class="device"
+          src={`${base}assets/grzybol-prototyp.webp`}
+          alt="Koncepcyjna wizualizacja urządzenia Grzybol z ekranem mapy i przyciskami, ustawionego na leśnym pniu"
+        />
+
+        <span class="visual-label">
+          WIZUALIZACJA KONCEPCYJNA
+        </span>
+
+      </div>
+
+    </section>
+
+    <!-- STATUS PROJEKTU -->
+    <div class="statusline">
+
+      <span>
+        REV A
+        <span class="amber">
+          // W TRAKCIE PROJEKTOWANIA
+        </span>
+      </span>
+
+      <span>
+        OSTATNIA AKTUALIZACJA: 20.11.2026
+      </span>
+
+    </div>
+
+    <!-- KAFELKI PROJEKTU -->
+    <section
+      class="section"
+      aria-labelledby="next-title"
+    >
+
+      <div class="section-head">
+        <h2 id="next-title">POZNAJ PROJEKT</h2>
+        <span class="eyebrow" style="margin:0">
+          OD SCHEMATU DO LASU
+        </span>
+      </div>
+
+      <div class="tiles">
+
+        <a href={`${base}projekt/`} class="tile">
+          <span class="kicker">01 / HARDWARE</span>
+          <h3>Co jest w środku?</h3>
+          <p>
+            STM32, GNSS, zasilanie z ogniwa 18650
+            i projekt własnego PCB.
+          </p>
+        </a>
+
+        <a href={`${base}devlog/`} class="tile">
+          <span class="kicker">
+            02 / DEVELOPMENT LOG
+          </span>
+          <h3>Dziennik prac</h3>
+          <p>
+            Decyzje projektowe, małe sukcesy i błędy.
+          </p>
+        </a>
+
+        <a href={`${base}roadmapa/`} class="tile">
+          <span class="kicker">03 / ROADMAP</span>
+          <h3>Co dalej?</h3>
+          <p>
+            Pierwsza rewizja płytki, firmware,
+            prototyp obudowy i testy terenowe.
+          </p>
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- STOPKA -->
+  <footer class="footer">
+    <span>© 2026 GRZYBOL</span>
+    <span></span>
+  </footer>
+
+</BaseLayout>

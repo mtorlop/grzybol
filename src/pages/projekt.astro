@@ -1,0 +1,116 @@
+
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="O projekcie"
+  description="Poznaj GRZYBOL i urządzenie GRZYBOL9000: autorski lokalizator leśny GPS."
+  activePage="projekt"
+>
+  <main class="subpage">
+
+    <p class="eyebrow">01 / PROJECT OVERVIEW</p>
+
+    <h1 class="subheading">O PROJEKCIE</h1>
+
+    <p class="intro">
+      GRZYBOL to hobbystyczny projekt elektroniki i nawigacji
+      terenowej. Jego głównym elementem jest GRZYBOL9000,
+      autorski lokalizator leśny GPS.
+
+      Pierwszy cel jest prosty: niezawodne wskazywanie pozycji
+      i pomoc w orientacji w terenie. Funkcje zapisywania
+      punktów orientacyjnych planowane są w kolejnych etapach.
+    </p>
+
+    <div class="content-grid">
+
+      <!-- OPIS PROJEKTU -->
+      <div class="panel">
+
+        <h2>DLACZEGO GRZYBOL9000?</h2>
+
+        <p>
+          Zamiast gotowego modułu w obudowie powstaje własny
+          układ elektroniczny: schemat, projekt PCB, zasilanie,
+          komunikacja z odbiornikiem GNSS i oprogramowanie
+          mikrokontrolera.
+        </p>
+
+        <p>
+          Ta strona dokumentuje proces krok po kroku.
+          Będą tutaj także decyzje, które nie wypaliły,
+          poprawki i zdjęcia kolejnych wersji urządzenia.
+        </p>
+
+        <div class="callout">
+          STATUS: projekt PCB Rev A trwa.
+          Widoczny na stronie render urządzenia to wizja
+          wyglądu, a nie zdjęcie gotowego prototypu.
+        </div>
+
+      </div>
+
+      <!-- SPECYFIKACJA TECHNICZNA -->
+      <div class="panel">
+
+        <h2>PLANOWANY HARDWARE</h2>
+
+        <div class="specs">
+
+          <div class="spec">
+            <small>MIKROKONTROLER</small>
+            <strong>STM32</strong>
+          </div>
+
+          <div class="spec">
+            <small>ODBIORNIK GNSS</small>
+            <strong>L76</strong>
+          </div>
+
+          <div class="spec">
+            <small>ZASILANIE</small>
+            <strong>Li-ion 18650</strong>
+          </div>
+
+          <div class="spec">
+            <small>BUCK-BOOST</small>
+            <strong>TPS631000</strong>
+          </div>
+
+          <div class="spec">
+            <small>ŁADOWANIE</small>
+            <strong>MCP73833</strong>
+          </div>
+
+          <div class="spec">
+            <small>PROGRAMOWANIE</small>
+            <strong>SWD / ST-Link</strong>
+          </div>
+
+        </div>
+
+        <p style="padding-top:20px">
+          Specyfikacja może się jeszcze zmienić
+          podczas projektowania i testów.
+        </p>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 GRZYBOL</span>
+    <span>
+      <a href={`${base}devlog/`}>
+        ZOBACZ DEVLOG →
+      </a>
+    </span>
+  </footer>
+
+</BaseLayout>
