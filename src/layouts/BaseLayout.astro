@@ -1,6 +1,8 @@
 
 ---
 import Header from '../components/Header.astro';
+import { ClientRouter } from 'astro:transitions';
+import GrzybolEffects from '../components/GrzybolEffects.astro';
 
 interface Props {
   title: string;
@@ -20,6 +22,12 @@ const base = import.meta.env.BASE_URL;
 <!doctype html>
 <html lang="pl">
   <head>
+    <link
+      rel="icon"
+      type="image/png"
+      href={`${base}assets/grzybol-favicon.png?v=2`}
+    />
+    <ClientRouter />
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -49,6 +57,9 @@ const base = import.meta.env.BASE_URL;
   </head>
 
   <body>
+    <GrzybolEffects />
+
+
     <div class="page">
       <div class="container">
         <Header activePage={activePage} />
@@ -58,3 +69,8 @@ const base = import.meta.env.BASE_URL;
     </div>
   </body>
 </html>
+
+
+
+
+
