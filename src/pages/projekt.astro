@@ -1,116 +1,171 @@
-
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { components } from '../data/komponenty';
 
 const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
-  title="O projekcie"
-  description="Poznaj GRZYBOL i urządzenie GRZYBOL9000: autorski lokalizator leśny GPS."
+  title="Budowa"
+  description="Poznaj najważniejsze komponenty elektroniczne lokalizatora leśnego GRZYBOL9000."
   activePage="projekt"
 >
   <main class="subpage">
 
-    <p class="eyebrow">01 / PROJECT OVERVIEW</p>
+    <p class="eyebrow">01 / GRZYBOL9000 HARDWARE</p>
+    <h1 class="subheading">BUDOWA</h1>
 
-    <h1 class="subheading">O PROJEKCIE</h1>
-
-    <p class="intro">
-      GRZYBOL to hobbystyczny projekt elektroniki i nawigacji
-      terenowej. Jego głównym elementem jest GRZYBOL9000,
-      autorski lokalizator leśny GPS.
-
-      Pierwszy cel jest prosty: niezawodne wskazywanie pozycji
-      i pomoc w orientacji w terenie. Funkcje zapisywania
-      punktów orientacyjnych planowane są w kolejnych etapach.
-    </p>
-
-    <div class="content-grid">
-
-      <!-- OPIS PROJEKTU -->
-      <div class="panel">
-
-        <h2>DLACZEGO GRZYBOL9000?</h2>
-
-        <p>
-          Zamiast gotowego modułu w obudowie powstaje własny
-          układ elektroniczny: schemat, projekt PCB, zasilanie,
-          komunikacja z odbiornikiem GNSS i oprogramowanie
-          mikrokontrolera.
-        </p>
-
-        <p>
-          Ta strona dokumentuje proces krok po kroku.
-          Będą tutaj także decyzje, które nie wypaliły,
-          poprawki i zdjęcia kolejnych wersji urządzenia.
-        </p>
-
-        <div class="callout">
-          STATUS: projekt PCB Rev A trwa.
-          Widoczny na stronie render urządzenia to wizja
-          wyglądu, a nie zdjęcie gotowego prototypu.
-        </div>
-
-      </div>
-
-      <!-- SPECYFIKACJA TECHNICZNA -->
-      <div class="panel">
-
-        <h2>PLANOWANY HARDWARE</h2>
-
-        <div class="specs">
-
-          <div class="spec">
-            <small>MIKROKONTROLER</small>
-            <strong>STM32</strong>
+    <div class="component-grid">
+      {components.map((component) => (
+        <a
+          href={`${base}komponenty/${component.slug}/`}
+          class="component-card"
+        >
+          <div class="component-image">
+            <img
+              src={`${base}assets/components/${component.image}`}
+              alt={`Wizualizacja komponentu ${component.name}`}
+              loading="lazy"
+            />
           </div>
 
-          <div class="spec">
-            <small>ODBIORNIK GNSS</small>
-            <strong>L76</strong>
+          <div class="component-info">
+            <span class="component-type">
+              {component.type}
+            </span>
+
+            <h2>{component.name}</h2>
+
+            <p>{component.description}</p>
+
+            <span class="component-link">
+              SZCZEGÓŁY <span aria-hidden="true">→</span>
+            </span>
           </div>
-
-          <div class="spec">
-            <small>ZASILANIE</small>
-            <strong>Li-ion 18650</strong>
-          </div>
-
-          <div class="spec">
-            <small>BUCK-BOOST</small>
-            <strong>TPS631000</strong>
-          </div>
-
-          <div class="spec">
-            <small>ŁADOWANIE</small>
-            <strong>MCP73833</strong>
-          </div>
-
-          <div class="spec">
-            <small>PROGRAMOWANIE</small>
-            <strong>SWD / ST-Link</strong>
-          </div>
-
-        </div>
-
-        <p style="padding-top:20px">
-          Specyfikacja może się jeszcze zmienić
-          podczas projektowania i testów.
-        </p>
-
-      </div>
-
+        </a>
+      ))}
     </div>
 
   </main>
 
   <footer class="footer">
     <span>© 2026 GRZYBOL</span>
-    <span>
-      <a href={`${base}devlog/`}>
-        ZOBACZ DEVLOG →
-      </a>
-    </span>
+    <span>GRZYBOL9000 // HARDWARE</span>
   </footer>
-
 </BaseLayout>
+
+<style>
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    margin-top: 55px;
+    margin-bottom: 90px;
+  }
+
+  .component-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+    transition: transform 0.25s ease;
+  }
+
+  .component-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .component-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 285px;
+    background: rgba(15, 27, 20, 0.35);
+    border: 1px solid rgba(166, 189, 139, 0.12);
+    overflow: hidden;
+  }
+
+  .component-image img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  .component-card:hover img {
+    transform: scale(1.06);
+  }
+
+  .component-info {
+    padding: 24px 4px;
+  }
+
+  .component-type {
+    color: #a6bd8b;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .component-info h2 {
+    margin: 12px 0;
+    color: #f0efe2;
+    font-size: 27px;
+    font-weight: 400;
+    letter-spacing: 2px;
+  }
+
+  .component-info p {
+    color: #b4bdb0;
+    font-size: 14px;
+    line-height: 1.8;
+    min-height: 100px;
+  }
+
+  .component-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: #e3ad53;
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .component-card:hover .component-link {
+    color: #ffd17d;
+  }
+
+  .component-card:focus-visible {
+    outline: 2px solid #e3ad53;
+    outline-offset: 5px;
+  }
+
+  @media (max-width: 900px) {
+    .component-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .component-grid {
+      grid-template-columns: 1fr;
+      margin-top: 30px;
+    }
+
+    .component-image {
+      height: 260px;
+    }
+
+    .component-info p {
+      min-height: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .component-card,
+    .component-image img {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,271 @@
+
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  components,
+  type ComponentData
+} from '../../data/komponenty';
+
+export function getStaticPaths() {
+  return components.map((component) => ({
+    params: { slug: component.slug },
+    props: { component }
+  }));
+}
+
+const { component } = Astro.props as {
+  component: ComponentData;
+};
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title={component.name}
+  description={component.description}
+  activePage="projekt"
+>
+  <main class="subpage">
+
+    <a class="back-link" href={`${base}projekt/`}>
+      ← POWRÓT DO BUDOWY
+    </a>
+
+    <p class="eyebrow">
+      GRZYBOL9000 / HARDWARE / {component.type}
+    </p>
+
+    <div class="component-layout">
+
+      <div class="component-preview">
+        <img
+          src={`${base}assets/components/${component.image}`}
+          alt={`Wizualizacja ${component.name}`}
+        />
+        <span>WIZUALIZACJA POGLĄDOWA</span>
+      </div>
+
+      <div class="component-content">
+
+        <span class="category">{component.type}</span>
+        <h1>{component.name}</h1>
+        <div class="accent-line"></div>
+
+        <p class="part-number">{component.partNumber}</p>
+
+        <section class="detail-block">
+          <h2>CO TO JEST?</h2>
+          <p>{component.explanation}</p>
+        </section>
+
+        <section class="detail-block">
+          <h2>ROLA W GRZYBOLU9000</h2>
+          <p>{component.useInGrzybol}</p>
+        </section>
+
+        <section class="detail-block">
+          <h2>DLACZEGO TEN KOMPONENT?</h2>
+          <p>{component.reason}</p>
+        </section>
+
+        <section class="detail-block">
+          <h2>SPECYFIKACJA</h2>
+
+          <div class="spec-grid">
+            {component.specs.map((spec) => (
+              <div class="spec-item">
+                <span>{spec.label}</span>
+                <strong>{spec.value}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div class="documentation">
+          <span>PRODUCENT: {component.producer}</span>
+
+          <a
+            href={component.datasheet}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="datasheet-btn"
+          >
+            DATASHEET ↗
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 GRZYBOL</span>
+    <a href={`${base}projekt/`}>WSZYSTKIE KOMPONENTY →</a>
+  </footer>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 48px;
+    color: #a6bd8b;
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+
+  .component-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 65px;
+    align-items: start;
+    margin: 45px 0 100px;
+  }
+
+  .component-preview {
+    position: sticky;
+    top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    min-height: 460px;
+    background: rgba(15, 27, 20, 0.35);
+    border: 1px solid rgba(166, 189, 139, 0.15);
+  }
+
+  .component-preview img {
+    width: 100%;
+    max-height: 390px;
+    object-fit: contain;
+  }
+
+  .component-preview span {
+    margin-top: 20px;
+    color: #879487;
+    font: 10px monospace;
+    letter-spacing: 2px;
+  }
+
+  .category {
+    color: #a6bd8b;
+    font: 12px monospace;
+    letter-spacing: 2px;
+  }
+
+  .component-content h1 {
+    margin: 20px 0;
+    color: #f0efe2;
+    font-size: clamp(40px, 6vw, 75px);
+    font-weight: 400;
+    letter-spacing: 3px;
+  }
+
+  .accent-line {
+    width: 55px;
+    height: 3px;
+    margin: 25px 0;
+    background: #e3ad53;
+  }
+
+  .part-number {
+    color: #a6bd8b;
+    font-family: monospace;
+    font-size: 13px;
+  }
+
+  .detail-block {
+    margin-top: 35px;
+  }
+
+  .detail-block h2 {
+    color: #e3ad53;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 2px;
+  }
+
+  .detail-block p {
+    color: #b4bdb0;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-top: 22px;
+  }
+
+  .spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(166, 189, 139, 0.15);
+  }
+
+  .spec-item span,
+  .documentation span {
+    color: #a6bd8b;
+    font: 11px monospace;
+    letter-spacing: 1px;
+  }
+
+  .spec-item strong {
+    color: #f0efe2;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .documentation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 45px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(166, 189, 139, 0.2);
+  }
+
+  .datasheet-btn {
+    display: inline-block;
+    padding: 14px 22px;
+    border: 1px solid #e3ad53;
+    color: #e3ad53;
+    font: 12px monospace;
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+
+  .datasheet-btn:hover {
+    background: rgba(227, 173, 83, 0.1);
+  }
+
+  @media (max-width: 850px) {
+    .component-layout {
+      grid-template-columns: 1fr;
+      gap: 35px;
+    }
+
+    .component-preview {
+      position: static;
+      min-height: 300px;
+    }
+
+    .component-preview img {
+      max-height: 280px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .spec-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
