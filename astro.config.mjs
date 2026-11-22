@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://mtorlop.github.io',
-  base: '/grzybol/',
+  site: 'https://grzybol.pl',
+  base: '/',
   trailingSlash: 'always',
 });
