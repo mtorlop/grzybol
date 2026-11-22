@@ -1,11 +1,13 @@
 ---
 const base = import.meta.env.BASE_URL;
+const logoBezOrbity = `${base}assets/grzybol-logo-bez-orbity.png`;
+const logoOrbita = `${base}assets/grzybol-logo-orbita.png`;
 ---
 
 <!-- Intro jest odtwarzane raz na karte, nie przy kazdej zmianie podstrony. -->
 <script is:inline>
   try {
-    const played = sessionStorage.getItem('grzybol-boot-v4') === '1';
+    const played = sessionStorage.getItem('grzybol-boot-orbit-v2') === '1';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!played && !reduced) {
       document.documentElement.classList.add('gb-boot-pending');
@@ -19,20 +21,27 @@ const base = import.meta.env.BASE_URL;
   <pre id="gb-code"></pre>
 
   <div id="gb-logo-stage">
-    <img class="gb-logo-main" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-top" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-middle" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-bottom" src={`${base}assets/grzybol-logo.png`} alt="" />
-  </div>
-</div>
-
-<!-- Wygaszacz po 30 sekundach bez aktywnosci. Nie usuwa ani nie przeladowuje strony. -->
-<div id="gb-idle-saver" aria-hidden="true">
-  <div id="gb-idle-logo-stage">
-    <img class="gb-logo-main" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-top" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-middle" src={`${base}assets/grzybol-logo.png`} alt="" />
-    <img class="gb-logo-slice gb-slice-bottom" src={`${base}assets/grzybol-logo.png`} alt="" />
+    <img class="gb-logo-main" src={logoBezOrbity} alt="" />
+    <img class="gb-logo-slice gb-slice-top" src={logoBezOrbity} alt="" />
+    <img class="gb-logo-slice gb-slice-middle" src={logoBezOrbity} alt="" />
+    <img class="gb-logo-slice gb-slice-bottom" src={logoBezOrbity} alt="" />
+    <!-- Pierwotny pierscien jest OSOBNA warstwa PNG. Rysujemy go maska SVG,
+         dokladnie po jego oryginalnym ksztalcie, bez dodatkowej kropki. -->
+    <svg class="gb-orbit" viewBox="0 0 818 261" aria-hidden="true" focusable="false">
+      <defs>
+        <mask id="gb-orbit-boot-mask" x="0" y="0" width="818" height="261"
+              maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+          <!-- Gorny luk: od prawej do lewej. -->
+          <path class="gb-orbit-draw gb-orbit-upper" pathLength="100"
+                d="M 267 130 C 303 108 318 85 291 72 C 274 63 244 66 218 74" />
+          <!-- Dolny luk: od lewej do prawej. -->
+          <path class="gb-orbit-draw gb-orbit-lower" pathLength="100"
+                d="M 128 118 C 73 151 56 188 106 190 C 141 192 192 174 230 158" />
+        </mask>
+      </defs>
+      <image href={logoOrbita} x="0" y="0" width="818" height="261"
+             mask="url(#gb-orbit-boot-mask)" />
+    </svg>
   </div>
 </div>
 
@@ -181,83 +190,43 @@ const base = import.meta.env.BASE_URL;
     41%, 100% { opacity: 0; transform: translate(0,0); }
   }
 
-  /* WYGASZACZ: czarne tlo i to samo rozjezdzajace sie logo co w intro. */
-  html.gb-idle { overflow: hidden; }
-
-  #gb-idle-saver {
-    position: fixed;
-    inset: 0;
-    z-index: 11000;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    background: #020503;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 180ms ease, visibility 180ms ease;
-  }
-
-  html.gb-idle #gb-idle-saver {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  #gb-idle-logo-stage {
-    position: relative;
-    isolation: isolate;
-    width: min(470px, 78vw);
-    max-height: 50vh;
-  }
-
-  #gb-idle-logo-stage img {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  #gb-idle-logo-stage .gb-logo-main { position: relative; }
-
-  #gb-idle-logo-stage .gb-logo-slice {
+  /* ORBITA: prawdziwe dwa luki z oryginalnego logo, poczatkowo niewidoczne.
+     Biala kreska w masce odkrywa zrodowe piksele orbity, nie rysuje nowej kropki. */
+  .gb-orbit {
     position: absolute;
     inset: 0;
-    opacity: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
     pointer-events: none;
   }
 
-  #gb-idle-logo-stage .gb-slice-top {
-    clip-path: inset(0 0 67% 0);
-    filter: drop-shadow(3px 0 1px rgba(183,220,177,0.85));
+  .gb-orbit-draw {
+    fill: none;
+    stroke: white;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 100 100;
+    stroke-dashoffset: 100;
   }
 
-  #gb-idle-logo-stage .gb-slice-middle {
-    clip-path: inset(33% 0 33% 0);
-    filter: drop-shadow(-3px 0 1px rgba(246,247,245,0.95));
+  .gb-orbit-upper { stroke-width: 25; }
+  .gb-orbit-lower { stroke-width: 31; }
+
+  /* Szybki rysunek orbity: dol od lewej do prawej, gora od prawej do lewej. */
+  #gb-boot.show-logo .gb-orbit-lower {
+    animation: gb-draw-orbit 180ms 420ms linear both;
   }
 
-  #gb-idle-logo-stage .gb-slice-bottom {
-    clip-path: inset(67% 0 0 0);
-    filter: drop-shadow(4px 0 1px rgba(218,170,105,0.75));
+  #gb-boot.show-logo .gb-orbit-upper {
+    animation: gb-draw-orbit 200ms 580ms linear both;
   }
 
-  #gb-idle-logo-stage.gb-idle-glitch .gb-logo-main {
-    animation: gb-logo-main-v3 1700ms steps(1, end) both;
-  }
-
-  #gb-idle-logo-stage.gb-idle-glitch .gb-slice-top {
-    animation: gb-logo-top-v3 1700ms steps(1, end) both;
-  }
-
-  #gb-idle-logo-stage.gb-idle-glitch .gb-slice-middle {
-    animation: gb-logo-middle-v3 1700ms steps(1, end) both;
-  }
-
-  #gb-idle-logo-stage.gb-idle-glitch .gb-slice-bottom {
-    animation: gb-logo-bottom-v3 1700ms steps(1, end) both;
+  @keyframes gb-draw-orbit {
+    from { stroke-dashoffset: 100; }
+    to   { stroke-dashoffset: 0; }
   }
 
   /* Zachowujemy dotychczasowe przejscie CRT. Dopracujemy je oddzielnie. */
@@ -281,133 +250,42 @@ const base = import.meta.env.BASE_URL;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .gb-orbit-draw {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+
     ::view-transition-old(root),
     ::view-transition-new(root) {
       animation-duration: 0.01ms !important;
     }
+
     #gb-boot { transition: none !important; }
-    #gb-idle-saver { transition: none !important; }
-    #gb-idle-logo-stage.gb-idle-glitch .gb-logo-main,
-    #gb-idle-logo-stage.gb-idle-glitch .gb-logo-slice {
-      animation: none !important;
-    }
-    #gb-idle-logo-stage.gb-idle-glitch .gb-logo-slice {
-      opacity: 0 !important;
-    }
   }
 </style>
 
 <script>
   let checkedBoot = false;
 
-  const IDLE_AFTER_MS = 30_000;
-  let idleTimer: number | undefined;
-  let idleGlitchTimer: number | undefined;
-  let saverIsVisible = false;
-
-  function stopIdleTimers() {
-    window.clearTimeout(idleTimer);
-    window.clearInterval(idleGlitchTimer);
-    idleTimer = undefined;
-    idleGlitchTimer = undefined;
-  }
-
-  function runIdleLogoGlitch() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const logo = document.getElementById('gb-idle-logo-stage');
-    if (!logo) return;
-    logo.classList.remove('gb-idle-glitch');
-    void logo.offsetWidth; // uruchamia animacje od poczatku
-    logo.classList.add('gb-idle-glitch');
-  }
-
-  function showIdleSaver() {
-    if (document.hidden || document.documentElement.classList.contains('gb-boot-pending')) {
-      return;
-    }
-    if (!document.getElementById('gb-idle-saver')) return;
-    saverIsVisible = true;
-    document.documentElement.classList.add('gb-idle');
-    runIdleLogoGlitch();
-    // Podczas dluzszej bezczynnosci co jakis czas powtarzamy efekt.
-    idleGlitchTimer = window.setInterval(runIdleLogoGlitch, 8000);
-  }
-
-  function armIdleTimer() {
-    window.clearTimeout(idleTimer);
-    idleTimer = undefined;
-    if (saverIsVisible || document.hidden ||
-        document.documentElement.classList.contains('gb-boot-pending')) return;
-    idleTimer = window.setTimeout(showIdleSaver, IDLE_AFTER_MS);
-  }
-
-  function hideIdleSaver() {
-    saverIsVisible = false;
-    window.clearInterval(idleGlitchTimer);
-    idleGlitchTimer = undefined;
-    document.documentElement.classList.remove('gb-idle');
-    document.getElementById('gb-idle-logo-stage')?.classList.remove('gb-idle-glitch');
-  }
-
-  function handleActivity(event: Event) {
-    if (saverIsVisible) {
-      // Pierwsze przewiniecie lub klawisz tylko wybudza, nie rusza strony pod spodem.
-      if (event.cancelable &&
-          (event.type === 'wheel' || event.type === 'touchstart' || event.type === 'keydown')) {
-        event.preventDefault();
-      }
-      hideIdleSaver();
-    }
-    armIdleTimer();
-  }
-
-  // Jeden zestaw sluchaczy dla calej aplikacji, rowniez przy zmianach podstron Astro.
-  for (const type of ['pointermove', 'pointerdown']) {
-    document.addEventListener(type, handleActivity, { passive: true, capture: true });
-  }
-  document.addEventListener('keydown', handleActivity, { passive: false, capture: true });
-  document.addEventListener('wheel', handleActivity, { passive: false, capture: true });
-  document.addEventListener('touchstart', handleActivity, { passive: false, capture: true });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      stopIdleTimers();
-      if (saverIsVisible) hideIdleSaver();
-    } else {
-      armIdleTimer();
-    }
-  });
-
-  document.addEventListener('astro:before-swap', () => {
-    stopIdleTimers();
-    if (saverIsVisible) hideIdleSaver();
-  });
-
   document.addEventListener('astro:page-load', () => {
-    // Przy zmianie zakladki resetujemy 30-sekundowe odliczanie.
-    if (checkedBoot) {
-      armIdleTimer();
-      return;
-    }
+    // Astro ClientRouter fires this also on normal navigation.
+    // Play the boot animation only once per tab.
+    if (checkedBoot) return;
     checkedBoot = true;
 
-    if (!document.documentElement.classList.contains('gb-boot-pending')) {
-      armIdleTimer();
-      return;
-    }
+    if (!document.documentElement.classList.contains('gb-boot-pending')) return;
 
     const boot = document.getElementById('gb-boot');
     const code = document.getElementById('gb-code');
 
     if (!boot || !code) {
       document.documentElement.classList.remove('gb-boot-pending');
-      armIdleTimer();
       return;
     }
 
-    try { sessionStorage.setItem('grzybol-boot-v4', '1'); } catch {}
+    try { sessionStorage.setItem('grzybol-boot-orbit-v2', '1'); } catch {}
 
-    // To stylizowana sekwencja startowa, nie rzeczywisty firmware.
+    // Stylizowana sekwencja startowa, nie rzeczywisty firmware.
     const lines = [
       '// GRZYBOL9000 :: SYSTEM START',
       '#include "stm32l4xx_hal.h"',
@@ -434,20 +312,17 @@ const base = import.meta.env.BASE_URL;
       }
     }, 18);
 
-    // Błyskawiczny start: kod przez ~0,27 s, potem logo przez ~1,9 s.
     window.setTimeout(() => {
       window.clearInterval(ticker);
       boot.classList.add('show-logo');
     }, 270);
 
-    // Odsłaniamy stronę ok. 2,17 s od startu.
     window.setTimeout(() => {
       document.documentElement.classList.remove('gb-boot-pending');
     }, 2170);
 
     window.setTimeout(() => {
       boot.remove();
-      armIdleTimer(); // 30 sekund liczymy od zakonczenia intro.
     }, 2490);
   });
 </script>
