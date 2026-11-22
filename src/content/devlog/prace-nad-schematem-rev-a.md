@@ -4,6 +4,7 @@ title: "Prace nad schematem Rev A"
 month: "2026-10"
 category: "PCB / DESIGN"
 order: 1
+area: hardware
 ---
 
 Projekt zasilania, połączenia mikrokontrolera,

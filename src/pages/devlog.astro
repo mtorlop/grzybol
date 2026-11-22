@@ -1,117 +1,260 @@
-
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import {
-  getCollection,
-  render,
-  type CollectionEntry
-} from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 
 const base = import.meta.env.BASE_URL;
+type DevlogEntry = CollectionEntry<'devlog'>;
+type Area = 'www' | 'hardware' | 'firmware';
 
-// Pobieramy wpisy Markdown
-const entries: CollectionEntry<'devlog'>[] =
-  await getCollection('devlog');
+// Zachowujemy wszystkie dotychczasowe wpisy.
+const entries = await getCollection('devlog');
 
-// Ustalamy datę do sortowania
-const sortValue = (entry: CollectionEntry<'devlog'>) => {
-  if (entry.data.date) {
-    return entry.data.date.getTime();
-  }
-
-  if (entry.data.month) {
-    return Date.parse(`${entry.data.month}-01T00:00:00Z`);
-  }
-
+const sortValue = (entry: DevlogEntry) => {
+  if (entry.data.date) return entry.data.date.getTime();
+  if (entry.data.month) return Date.parse(`${entry.data.month}-01T00:00:00Z`);
   return 0;
 };
 
-// Najnowsze wpisy wyświetlamy na górze
-entries.sort((a, b) => {
-  const dateDiff = sortValue(b) - sortValue(a);
-
-  if (dateDiff !== 0) {
-    return dateDiff;
-  }
-
-  return b.data.order - a.data.order;
-});
-
-// Przygotowujemy treść wpisów
-const posts = await Promise.all(
-  entries.map(async (entry) => ({
-    data: entry.data,
-    Content: (await render(entry)).Content
-  }))
+entries.sort((a, b) =>
+  sortValue(b) - sortValue(a) || b.data.order - a.data.order
 );
+
+const posts = await Promise.all(entries.map(async (entry) => ({
+  id: entry.id,
+  data: entry.data,
+  area: entry.data.area as Area,
+  Content: (await render(entry)).Content,
+})));
+
+const totals = {
+  all: posts.length,
+  www: posts.filter((p) => p.area === 'www').length,
+  hardware: posts.filter((p) => p.area === 'hardware').length,
+  firmware: posts.filter((p) => p.area === 'firmware').length,
+};
+
+const formatDate = (data: DevlogEntry['data']) => {
+  if (data.month) {
+    return new Date(`${data.month}-01T00:00:00Z`)
+      .toLocaleDateString('pl-PL', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+      .toUpperCase();
+  }
+  return data.date?.toLocaleDateString('pl-PL', {
+    day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC',
+  }) ?? 'DATA NIEUSTALONA';
+};
 ---
 
 <BaseLayout
   title="Devlog"
-  description="Dziennik rozwoju GRZYBOLA: postępy projektowania elektroniki, PCB i oprogramowania."
+  description="Historia rozwoju GRZYBOLA: strona WWW, elektronika i firmware."
   activePage="devlog"
 >
   <main class="subpage">
-
-    <p class="eyebrow">02 / DEVELOPMENT LOG</p>
-
+    <p class="eyebrow">02 / GRZYBOL CHANGELOG</p>
     <h1 class="subheading">DEVLOG</h1>
-
     <p class="intro">
-      Zapis postępów, decyzji i eksperymentów
-      podczas tworzenia GRZYBOLA.
+      Historia rozwoju GRZYBOLA. Aktualizacje strony, postępy projektowania
+      elektroniki i przyszłe wersje firmware'u.
     </p>
 
-    <!-- AUTOMATYCZNA LISTA WPISÓW -->
-    <div class="log-list">
+    <section class="devlog-system" aria-label="Historia aktualizacji">
+      <!-- Filtry CSS: dzialaja bez JavaScriptu, takze po zmianie podstrony w Astro. -->
+      <input class="filter-input" type="radio" name="devlog-filter" id="devlog-all" checked />
+      <input class="filter-input" type="radio" name="devlog-filter" id="devlog-www" />
+      <input class="filter-input" type="radio" name="devlog-filter" id="devlog-hardware" />
+      <input class="filter-input" type="radio" name="devlog-filter" id="devlog-firmware" />
 
-      {posts.map(({ data, Content }) => (
-        <article class="log-item">
+      <div class="devlog-filters" aria-label="Filtruj według obszaru">
+        <label for="devlog-all">WSZYSTKIE <span>{totals.all}</span></label>
+        <label for="devlog-www">WWW <span>{totals.www}</span></label>
+        <label for="devlog-hardware">HARDWARE <span>{totals.hardware}</span></label>
+        <label for="devlog-firmware">FIRMWARE <span>{totals.firmware}</span></label>
+      </div>
 
-          <div class="log-date">
+      <div class="devlog-feed">
+        {posts.map(({ id, data, area, Content }) => (
+          <article class="devlog-entry" data-area={area}>
+            <div class="entry-metadata">
+              <span class="entry-area">{area.toUpperCase()}</span>
+              {data.version && (
+                <span class="entry-version">{data.version}</span>
+              )}
+              <time>{formatDate(data)}</time>
+            </div>
 
-            {data.month
-              ? new Date(`${data.month}-01T00:00:00Z`)
-                  .toLocaleDateString('pl-PL', {
-                    month: 'long',
-                    year: 'numeric',
-                    timeZone: 'UTC'
-                  })
-                  .toUpperCase()
-              : data.date?.toLocaleDateString('pl-PL', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  timeZone: 'UTC'
-                })
-            }
-
-            <br />
-
-            <span>{data.category}</span>
-
-          </div>
-
-          <div>
             <h2>{data.title}</h2>
-            <Content />
-          </div>
+            {data.summary ? <p class="entry-summary">{data.summary}</p> : (
+              <p class="entry-summary">{data.category}</p>
+            )}
 
-        </article>
-      ))}
+            <details class="entry-details">
+              <summary>PEŁNY WPIS <span aria-hidden="true">+</span></summary>
+              <div class="entry-body">
+                <Content />
+              </div>
+            </details>
+          </article>
+        ))}
 
-    </div>
-
+        {totals.all === 0 && (
+          <p class="empty-message" data-area="all">Jeszcze nie ma żadnych wpisów.</p>
+        )}
+        {totals.www === 0 && (
+          <p class="empty-message" data-area="www">Pierwsza aktualizacja WWW pojawi się tutaj.</p>
+        )}
+        {totals.hardware === 0 && (
+          <p class="empty-message" data-area="hardware">Wpisy dotyczące elektroniki pojawią się tutaj.</p>
+        )}
+        {totals.firmware === 0 && (
+          <p class="empty-message" data-area="firmware">Firmware GRZYBOL9000 jest jeszcze przed pierwszym wydaniem.</p>
+        )}
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     <span>© 2026 GRZYBOL</span>
-
-    <span>
-      <a href={`${base}roadmapa/`}>
-        CO DALEJ? →
-      </a>
-    </span>
+    <a href={`${base}roadmapa/`}>CO DALEJ? →</a>
   </footer>
-
 </BaseLayout>
+
+<style>
+  .devlog-system { position: relative; }
+
+  .filter-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .devlog-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .devlog-filters label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 17px;
+    border: 1px solid rgba(199, 211, 163, .2);
+    background: rgba(21, 34, 24, .65);
+    color: #bec9b5;
+    font: 12px monospace;
+    letter-spacing: .10em;
+    cursor: pointer;
+    transition: color .2s, border-color .2s, background .2s;
+  }
+
+  .devlog-filters label:hover { border-color: #9ba878; }
+  .devlog-filters label span { color: #7f937c; font-size: 10px; }
+
+  #devlog-all:checked ~ .devlog-filters label[for="devlog-all"],
+  #devlog-www:checked ~ .devlog-filters label[for="devlog-www"],
+  #devlog-hardware:checked ~ .devlog-filters label[for="devlog-hardware"],
+  #devlog-firmware:checked ~ .devlog-filters label[for="devlog-firmware"] {
+    border-color: #e5ae54;
+    color: #e5ae54;
+    background: rgba(229, 174, 84, .07);
+  }
+
+  #devlog-all:focus-visible ~ .devlog-filters label[for="devlog-all"],
+  #devlog-www:focus-visible ~ .devlog-filters label[for="devlog-www"],
+  #devlog-hardware:focus-visible ~ .devlog-filters label[for="devlog-hardware"],
+  #devlog-firmware:focus-visible ~ .devlog-filters label[for="devlog-firmware"] {
+    outline: 2px solid #e5ae54;
+    outline-offset: 3px;
+  }
+
+  .devlog-feed { display: grid; gap: 16px; max-width: 1000px; }
+
+  .devlog-entry {
+    padding: 27px 30px;
+    border: 1px solid rgba(199, 211, 163, .18);
+    background: rgba(21, 34, 24, .58);
+    min-width: 0;
+  }
+
+  .entry-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .entry-area { color: #a8c099; font: 11px monospace; letter-spacing: .13em; }
+  .entry-version { color: #e5ae54; font: 12px monospace; letter-spacing: .05em; }
+  .entry-metadata time { color: #8c9b88; font: 11px monospace; margin-left: auto; }
+
+  .devlog-entry h2 {
+    color: #eae8d7;
+    font: 500 clamp(20px, 2.4vw, 27px) 'Trebuchet MS', Arial, sans-serif;
+    margin: 18px 0 10px;
+  }
+
+  .entry-summary { color: #b8c0b1; font-size: 13px; line-height: 1.8; margin: 0; }
+
+  .entry-details { border-top: 1px solid rgba(199, 211, 163, .15); margin-top: 20px; }
+  .entry-details summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    list-style: none;
+    padding-top: 18px;
+    color: #e5ae54;
+    font-size: 11px;
+    letter-spacing: .14em;
+    cursor: pointer;
+  }
+
+  .entry-details summary::-webkit-details-marker { display: none; }
+  .entry-details summary span { font-size: 19px; transition: transform .2s; }
+  .entry-details[open] summary span { transform: rotate(45deg); }
+  .entry-details summary:focus-visible { outline: 2px solid #e5ae54; outline-offset: 5px; }
+
+  .entry-body {
+    padding-top: 18px;
+    color: #bec8b9;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+  }
+
+  .entry-body :global(p) { margin: 0 0 14px; }
+  .entry-body :global(p:last-child) { margin-bottom: 0; }
+  .entry-body :global(ul), .entry-body :global(ol) { padding-left: 24px; }
+  .entry-body :global(a) { color: #e5ae54; text-decoration: underline; }
+  .entry-body :global(img) { display: block; max-width: 100%; height: auto; }
+  .entry-body :global(pre) { overflow-x: auto; padding: 15px; background: #0b120e; }
+  .entry-body :global(code) { overflow-wrap: anywhere; }
+  .entry-body :global(h2), .entry-body :global(h3) { color: #eae8d7; margin-top: 18px; }
+
+  .empty-message {
+    display: none;
+    border: 1px dashed rgba(199, 211, 163, .2);
+    padding: 28px;
+    color: #a9afa0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  #devlog-www:checked ~ .devlog-feed .devlog-entry:not([data-area="www"]),
+  #devlog-hardware:checked ~ .devlog-feed .devlog-entry:not([data-area="hardware"]),
+  #devlog-firmware:checked ~ .devlog-feed .devlog-entry:not([data-area="firmware"]) {
+    display: none;
+  }
+
+  #devlog-all:checked ~ .devlog-feed .empty-message[data-area="all"],
+  #devlog-www:checked ~ .devlog-feed .empty-message[data-area="www"],
+  #devlog-hardware:checked ~ .devlog-feed .empty-message[data-area="hardware"],
+  #devlog-firmware:checked ~ .devlog-feed .empty-message[data-area="firmware"] {
+    display: block;
+  }
+
+  @media (max-width: 740px) {
+    .devlog-entry { padding: 20px; }
+    .devlog-filters { gap: 8px; }
+    .devlog-filters label { padding: 10px 12px; font-size: 11px; }
+    .entry-metadata time { flex-basis: 100%; margin-left: 0; }
+  }
+</style>
